@@ -12,13 +12,41 @@
 
 var KCAF = function() {
     const NAME = "https://github.com/kcaf";
+
+    console.log(NAME,"> Injected");
+
     window.onload = function() {
         window.unwatch("d20");
         console.log(NAME, "> Begin");
-        // Custom code here
+        /* Custom code here */
+
+        //chatSend("/roll 1d100"));
+        //console.log( "Character:", charByName("Mob Barley") );
+        //console.log( "Random number:", diceRandom(20) +1 );
     };
 
-    console.log(NAME,"> Injected");
+    /* Examples */
+
+        // Send string to chat using current char id
+        function chatSend (str) {
+            d20.textchat.doChatInput(str);
+        };
+
+        // Get character by name
+        function charByName (name) {
+            var char = null;
+            d20.Campaign.characters.each(function(c) {
+                if (c.get("name") == name) char = c;
+            });
+            return char;
+        };
+
+        // Returns random integer between [0,int)
+        function diceRandom (int) {
+            return d20.textchat.diceengine.random(int);
+        };
+
+    /* end Examples */
 
     /* object.watch polyfill by Eli Grey, http://eligrey.com */
     if (!Object.prototype.watch) {
@@ -81,4 +109,5 @@ var KCAF = function() {
     });
 };
 
+// Inject
 unsafeWindow.eval("(" + KCAF.toString() + ")()");
