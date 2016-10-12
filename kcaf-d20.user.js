@@ -3,7 +3,7 @@
 // @namespace    https://github.com/kcaf
 // @license      MIT (https://opensource.org/licenses/MIT)
 // @version      1
-// @description  Roll20 bypass CSP and gain access to d20 variable
+// @description  Roll20 userscript boilerplate to bypass Content Security Policy and gain access to d20 object.
 // @author       kcaf
 // @match        https://app.roll20.net/editor/
 // @grant        unsafeWindow
