@@ -1,5 +1,5 @@
 // ==UserScript==
-// @name         KCAF-d20
+// @name         d20-boilerplate
 // @namespace    https://github.com/kcaf
 // @license      MIT (https://opensource.org/licenses/MIT)
 // @version      1
