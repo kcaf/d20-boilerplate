@@ -29,12 +29,11 @@ var d20boilerplate = function() {
 	// Init, d20 variable exposed and views are loaded
 	function Init() {
 		console.log(NAME, "> Ready");
-		/* Ready to go, run your custom code after this */
+		/* Ready to go, run your custom code here */
 
 		rollDice("3d10+3d6+15", function(result){
 			chatSend("Rolling [3d10+3d6+15]: " + result.total);
 		}, null);
-
 	}
 
 	/* Examples */
@@ -46,11 +45,7 @@ var d20boilerplate = function() {
 
 		// Get character by name
 		function charByName (name) {
-			var char = null;
-			d20.Campaign.characters.each(function(c) {
-				if (c.get("name") == name) char = c;
-			});
-			return char;
+			return d20.Campaign.characters.find(function(c){return c.get("name") == name});
 		}
 
 		// Returns random integer between [0,int)
