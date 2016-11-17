@@ -2,112 +2,136 @@
 // @name         d20-boilerplate
 // @namespace    https://github.com/kcaf
 // @license      MIT (https://opensource.org/licenses/MIT)
-// @version      1
-// @description  Roll20 userscript boilerplate to bypass Content Security Policy and gain access to d20 object.
+// @version      2
+// @description  Roll20 userscript boilerplate
 // @author       kcaf
 // @match        https://app.roll20.net/editor/
 // @grant        unsafeWindow
 // @run-at       document-start
 // ==/UserScript==
 
-var KCAF = function() {
-    const NAME = "https://github.com/kcaf";
+var d20boilerplate = function() {
+	const NAME = "d20-boilerplate";
+	console.log(NAME,"> Injected");
 
-    console.log(NAME,"> Injected");
+	// Window loaded
+	window.onload = function() {
+		window.unwatch("d20");
 
-    window.onload = function() {
-        window.unwatch("d20");
-        console.log(NAME, "> Begin");
-        /* Custom code here */
+		var checkLoaded = setInterval(function() {
+			if (!$("#loading-overlay").is(":visible")) {
+				clearInterval(checkLoaded);
+				Init();
+			}
+		}, 1000);
+	};
 
-        //chatSend("/roll 1d100"));
-        //console.log( "Character:", charByName("Mob Barley") );
-        //console.log( "Random number:", diceRandom(20) +1 );
-    };
+	// Init, d20 variable exposed and views are loaded
+	function Init() {
+		console.log(NAME, "> Ready");
+		/* Ready to go, run your custom code after this */
 
-    /* Examples */
+		rollDice("3d10+3d6+15", function(result){
+			chatSend("Rolling [3d10+3d6+15]: " + result.total);
+		}, null);
 
-        // Send string to chat using current char id
-        function chatSend (str) {
-            d20.textchat.doChatInput(str);
-        };
+	}
 
-        // Get character by name
-        function charByName (name) {
-            var char = null;
-            d20.Campaign.characters.each(function(c) {
-                if (c.get("name") == name) char = c;
-            });
-            return char;
-        };
+	/* Examples */
 
-        // Returns random integer between [0,int)
-        function diceRandom (int) {
-            return d20.textchat.diceengine.random(int);
-        };
+		// Send string to chat using current char id
+		function chatSend (str) {
+			d20.textchat.doChatInput(str);
+		}
 
-    /* end Examples */
+		// Get character by name
+		function charByName (name) {
+			var char = null;
+			d20.Campaign.characters.each(function(c) {
+				if (c.get("name") == name) char = c;
+			});
+			return char;
+		}
 
-    /* object.watch polyfill by Eli Grey, http://eligrey.com */
-    if (!Object.prototype.watch) {
-        Object.defineProperty(Object.prototype, "watch", {
-            enumerable: false,
-            configurable: true,
-            writable: false,
-            value: function (prop, handler) {
-                var
-                oldval = this[prop],
-                newval = oldval,
-                getter = function () {
-                    return newval;
-                },
-                setter = function (val) {
-                    oldval = newval;
-                    return (newval = handler.call(this, prop, oldval, val));
-                };
+		// Returns random integer between [0,int)
+		function randomInt (int) {
+			return d20.textchat.diceengine.random(int);
+		}
 
-                if (delete this[prop]) {
-                    Object.defineProperty(this, prop, {
-                        get: getter,
-                        set: setter,
-                        enumerable: true,
-                        configurable: true
-                    });
-                }
-            }
-        });
-    }
+		/* 
+		 * Return random result from rolling dice
+		 *		roll: Dice string "3d10+3d6+15"
+		 *		success: Callback on successful roll
+		 *		error: Callback on error
+		 *
+		 * Returns result object
+		*/
+		function rollDice (roll, success, error) {
+			d20.textchat.diceengine.process(roll, success, error);
+		};
 
-    if (!Object.prototype.unwatch) {
-        Object.defineProperty(Object.prototype, "unwatch", {
-            enumerable: false,
-            configurable: true,
-            writable: false,
-            value: function (prop) {
-                var val = this[prop];
-                delete this[prop];
-                this[prop] = val;
-            }
-        });
-    }
-    /* end object.watch polyfill */
+	/* end Examples */
 
-    window.d20ext = {};
-    window.watch("d20ext", function (id, oldValue, newValue) {
-        console.log(NAME, "> Set Development");
-        newValue.environment = "development";
-        return newValue;
-    });
+	/* object.watch polyfill by Eli Grey, http://eligrey.com */
+	if (!Object.prototype.watch) {
+		Object.defineProperty(Object.prototype, "watch", {
+			enumerable: false,
+			configurable: true,
+			writable: false,
+			value: function (prop, handler) {
+				var
+				oldval = this[prop],
+				newval = oldval,
+				getter = function () {
+					return newval;
+				},
+				setter = function (val) {
+					oldval = newval;
+					return (newval = handler.call(this, prop, oldval, val));
+				};
 
-    window.d20 = {};
-    window.watch("d20", function (id, oldValue, newValue) {
-        console.log(NAME, "> Obtained d20 variable");
-        window.unwatch("d20ext");
-        window.d20ext.environment = "production";
-        newValue.environment = "production";
-        return newValue;
-    });
+				if (delete this[prop]) {
+					Object.defineProperty(this, prop, {
+						get: getter,
+						set: setter,
+						enumerable: true,
+						configurable: true
+					});
+				}
+			}
+		});
+	}
+
+	if (!Object.prototype.unwatch) {
+		Object.defineProperty(Object.prototype, "unwatch", {
+			enumerable: false,
+			configurable: true,
+			writable: false,
+			value: function (prop) {
+				var val = this[prop];
+				delete this[prop];
+				this[prop] = val;
+			}
+		});
+	}
+	/* end object.watch polyfill */
+
+	window.d20ext = {};
+	window.watch("d20ext", function (id, oldValue, newValue) {
+		console.log(NAME, "> Set Development");
+		newValue.environment = "development";
+		return newValue;
+	});
+
+	window.d20 = {};
+	window.watch("d20", function (id, oldValue, newValue) {
+		console.log(NAME, "> Obtained d20 variable");
+		window.unwatch("d20ext");
+		window.d20ext.environment = "production";
+		newValue.environment = "production";
+		return newValue;
+	});
 };
 
 // Inject
-unsafeWindow.eval("(" + KCAF.toString() + ")()");
+unsafeWindow.eval("(" + d20boilerplate.toString() + ")()");
